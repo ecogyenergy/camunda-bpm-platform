@@ -19,6 +19,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 
 import org.camunda.bpm.engine.ProcessEngineException;
 import org.camunda.bpm.engine.variable.Variables;
@@ -36,6 +37,10 @@ public class DateFormType extends AbstractFormFieldType {
   protected String datePattern;
   protected DateFormat dateFormat;
 
+  public DateFormType(DateFormat dateFormat) {
+    this.dateFormat = Objects.requireNonNull(dateFormat);
+  }
+  
   public DateFormType(String datePattern) {
     this.datePattern = datePattern;
     this.dateFormat = new SimpleDateFormat(datePattern);
@@ -68,7 +73,8 @@ public class DateFormType extends AbstractFormFieldType {
       try {
         return Variables.dateValue((Date) dateFormat.parseObject(strValue), propertyValue.isTransient());
       } catch (ParseException e) {
-        throw new ProcessEngineException("Could not parse value '"+value+"' as date using date format '"+datePattern+"'.");
+        throw new ProcessEngineException("Could not parse value '"+value+"' as date using date format '"+ 
+          Objects.toString((datePattern == null ) ? dateFormat : datePattern) +"'.");
       }
     }
     else {
