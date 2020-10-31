@@ -29,6 +29,8 @@ import org.camunda.bpm.engine.impl.context.Context;
 import org.camunda.bpm.engine.impl.context.ProcessApplicationContextUtil;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.camunda.bpm.engine.impl.pvm.runtime.AtomicOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * In contrast to {@link CommandContext}, this context holds resources that are only valid
@@ -147,7 +149,9 @@ public class CommandInvocationContext {
       if (throwable instanceof Error) {
         throw (Error) throwable;
       } else if (throwable instanceof PersistenceException) {
-        throw new ProcessEngineException("Process engine persistence exception", throwable);
+        Logger logger = LoggerFactory.getLogger(getClass());
+        logger.error("Process engine persistence exception - shutting down / terminating JVM by calling System.exit()", throwable);
+        System.exit(1);
       } else if (throwable instanceof RuntimeException) {
         throw (RuntimeException) throwable;
       } else {
